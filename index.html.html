@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>一起玩 Valorant 吗？</title>
+<style>
+:root{color-scheme:dark;--bg:#0f1923;--card:#1b2733;--red:#ff4655;--text:#ece8e1;--muted:#8b97a3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 50% 0%,#24394d,var(--bg) 60%);color:var(--text);font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.card{background:var(--card);border:1px solid #2c3e4f;border-left:4px solid var(--red);padding:32px 28px;width:min(92vw,460px);text-align:center}
+.tag{color:var(--red);letter-spacing:.3em;font-size:12px;font-weight:700}
+h1{font-size:26px;margin:12px 0 8px;line-height:1.3}
+p{color:var(--muted);margin:0 0 24px;line-height:1.6}
+.emoji{font-size:56px;margin-bottom:6px}
+.row{display:flex;gap:16px;justify-content:center;align-items:center;min-height:64px}
+button{font:inherit;font-weight:700;border:0;cursor:pointer;padding:12px 28px;font-size:18px;color:#fff;transition:transform .15s}
+#yes{background:var(--red);transform-origin:center}
+#yes:hover{filter:brightness(1.1)}
+#no{background:#2c3e4f;color:var(--text);position:relative;transition:transform .2s ease}
+#no.fly{z-index:10}
+.msg{min-height:22px;margin-top:18px;color:var(--red);font-size:14px}
+#done{display:none}
+#done h1{font-size:30px}
+</style>
+</head>
+<body>
+<div class="card" id="ask">
+  <div class="emoji">🎯</div>
+  <div class="tag">VALORANT</div>
+  <h1>你有空吗？<br>陪我玩一把 Valorant 好不好？</h1>
+  <p>哥哥带你飞！😎</p>
+  <div class="row">
+    <button id="yes">好呀 ✅</button>
+    <button id="no">不要 ❌</button>
+  </div>
+  <div class="msg" id="msg"></div>
+</div>
+
+<div class="card" id="done">
+  <div class="emoji">🎉</div>
+  <div class="tag">AGENT LOCKED IN</div>
+  <h1>太好了！！<br>那我们开黑吧！</h1>
+  <p>快上线，我在语音等你 🎧🔥</p>
+</div>
+
+<script>
+const yes=document.getElementById('yes'),no=document.getElementById('no'),msg=document.getElementById('msg');
+const lines=["哎呀，按不到 😏","再试一次？","别点不要嘛 🥺","你手速不够快哦","拜托啦～","不要的话我会难过的 😢","按「好呀」比较容易哦","你逃不掉的 😎","求求你了 🙏"];
+let n=0,scale=1,tx=0,ty=0;
+function dodge(e){
+  if(e&&e.cancelable)e.preventDefault();
+  const r=no.getBoundingClientRect(),w=r.width,h=r.height,m=12,bx=r.left-tx,by=r.top-ty;
+  let nx,ny,t=0;
+  do{
+    nx=(Math.random()*2-1)*140;ny=(Math.random()*2-1)*90;
+    nx=Math.max(m-bx,Math.min(window.innerWidth-w-m-bx,nx));
+    ny=Math.max(m-by,Math.min(window.innerHeight-h-m-by,ny));
+    t++;
+  }while(Math.hypot(nx-tx,ny-ty)<70&&t<10);
+  tx=nx;ty=ny;
+  no.classList.add('fly');
+  no.style.transform='translate('+tx+'px,'+ty+'px)';
+  msg.textContent=lines[n%lines.length];n++;
+  scale=Math.min(scale+0.12,2.2);
+  yes.style.transform='scale('+scale+')';
+}
+no.addEventListener('mouseenter',dodge);
+no.addEventListener('touchstart',dodge,{passive:false});
+no.addEventListener('click',dodge);
+yes.addEventListener('click',()=>{
+  document.getElementById('ask').style.display='none';
+  no.style.display='none';
+  document.getElementById('done').style.display='block';
+  confetti();
+});
+function confetti(){
+  const c=['#ff4655','#ece8e1','#fd8f98','#3ec9c9'];
+  for(let i=0;i<80;i++){
+    const d=document.createElement('div');
+    d.style.cssText='position:fixed;top:-10px;left:'+Math.random()*100+'vw;width:8px;height:14px;background:'+c[i%4]+';z-index:20;pointer-events:none;';
+    document.body.appendChild(d);
+    d.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:'translateY('+(window.innerHeight+40)+'px) rotate('+(Math.random()*720)+'deg)',opacity:.8}],{duration:1800+Math.random()*1800,delay:Math.random()*600,easing:'ease-in'}).onfinish=()=>d.remove();
+  }
+}
+</script>
+</body>
+</html>
